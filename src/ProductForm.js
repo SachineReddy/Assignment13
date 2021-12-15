@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 
-const RESET_VALUES = {id: '', category: '', price: '', name: ''}
+const RESET_VALUES = { id: '', category: '', price: '', name: '', instock: '' }
 
 class ProductForm extends Component {
     constructor(props) {
@@ -24,16 +24,35 @@ class ProductForm extends Component {
         })
     }
 
-    handleSave(e) {
-        this.props.onSave(this.state.product);
-        // reset the form values to blank after submitting
-        this.setState({
-            product: Object.assign({}, RESET_VALUES), 
-            errors: {}
-        })
-        // prevent the form submit event from triggering an HTTP Post
-        e.preventDefault()
-    }
+
+  onRadioChange = (newValue) => {
+    this.setState({
+      selectedOption: newValue.target.value
+    });
+    var option = newValue.target.value;
+    this.setState((prevState) => {
+      if (option === "In Stock") {
+        console.log("product in stock")
+        prevState.product.instock = true;
+      }
+      else {
+        console.log("product out stock")
+        prevState.product.instock = false;
+      }
+      return { product: prevState.product }
+    })
+  }
+
+  handleSave(e) {
+    this.props.onSave(this.state.product)
+    // reset the form values to blank after submitting
+    this.setState({
+      product: Object.assign({}, RESET_VALUES),
+      errors: {}
+    })
+    // prevent the form submit event from triggering an HTTP Post
+    e.preventDefault()
+  }
 
     render () {
         return (
@@ -41,17 +60,26 @@ class ProductForm extends Component {
                 <h4>Add a new product</h4>
                 <p>
                     <label>Name <br /> 
-                    <input type="text" class="form-control" name="name" onChange={this.handleChange} value={this.state.product.name} /></label>
+                    <input type="text" className="form-control" name="name" onChange={this.handleChange} value={this.state.product.name} /></label>
                 </p>
                 <p>
                     <label>Category <br /> 
-                    <input type="text" class="form-control" name="category" onChange={this.handleChange} value={this.state.product.category} /></label>
+                    <input type="text" className="form-control" name="category" onChange={this.handleChange} value={this.state.product.category} /></label>
                 </p>
                 <p>
                     <label>Price <br /> 
-                    <input type="text" class="form-control" name="price" onChange={this.handleChange} value={this.state.product.price} /></label>
+                    <input type="text" className="form-control" name="price" onChange={this.handleChange} value={this.state.product.price} /></label>
                 </p>
-                <input type="submit" class="btn btn-info" value="Save" onClick={this.handleSave}></input>
+        <div className="form-group">
+
+          <input className="form-group-input" type="radio" value="In Stock" checked={this.state.product.instock === true} onChange={this.onRadioChange} />
+          <label className="form-group-label">In Stock</label>
+          <br />
+          <input className="form-group-input" type="radio" value="Out Stock" checked={this.state.product.instock === false} onChange={this.onRadioChange} />
+          <label className="form-group-label">Out of Stock</label>
+        </div>
+        {}
+                <input type="submit" className="btn btn-info" value="Save" onClick={this.handleSave}></input>
             </form>
         )
     }
